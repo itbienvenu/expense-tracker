@@ -3,7 +3,7 @@ from sqlalchemy import Column, String, Float, Date, ForeignKey, DateTime, Table
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
-from database import Base
+from database.dbs import Base
 
 
 # Association table for many-to-many
