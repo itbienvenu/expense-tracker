@@ -64,4 +64,58 @@ def is_strong_password(password):
     
     return (len(errors) == 0, errors)
 
-print(is_strong_password("Bienvenu143@"))
+def password_strength_meter(password):
+    if not password:
+        return (0, ["Password cannot be empty"])
+    
+    score = 0
+    suggestions = []
+    
+    # Length contributes up to 25 points
+    length_score = min(25, len(password) * 2)
+    score += length_score
+    
+    # Character variety contributes up to 50 points
+    has_upper = bool(re.search(r'[A-Z]', password))
+    has_lower = bool(re.search(r'[a-z]', password))
+    has_digit = bool(re.search(r'\d', password))
+    has_special = bool(re.search(r'[!@#$%^&*(),.?":{}|<>]', password))
+    
+    variety_count = sum([has_upper, has_lower, has_digit, has_special])
+    variety_score = variety_count * 12.5  # 12.5 points per variety type
+    score += variety_score
+    
+    # Simple check for mixed case and special characters
+    if has_upper and has_lower:
+        score += 5
+    if has_special:
+        score += 10
+    if len(password) > 16:
+        score += 10
+    
+    # Penalties for weak patterns
+    weak_patterns_penalty = 0
+    lower_password = password.lower()
+    weak_terms = ['password', '123', 'qwerty', 'admin', 'letmein', 'welcome']
+    
+    for term in weak_terms:
+        if term in lower_password:
+            weak_patterns_penalty += 20
+    
+    score = max(0, score - weak_patterns_penalty)
+    
+    # Generate suggestions
+    if len(password) < 12:
+        suggestions.append("Use at least 12 characters")
+    if not has_upper:
+        suggestions.append("Add uppercase letters")
+    if not has_lower:
+        suggestions.append("Add lowercase letters")
+    if not has_digit:
+        suggestions.append("Add numbers")
+    if not has_special:
+        suggestions.append("Add special characters (!@#$% etc.)")
+    if weak_patterns_penalty > 0:
+        suggestions.append("Avoid common words and patterns")
+    
+    return (min(100, score), suggestions)

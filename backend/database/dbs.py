@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
-
+# database URL
 SQLALCHEMY_DATABASE_URL = os.getenv("DB_LINK")
 
 engine = create_engine(
@@ -13,6 +13,13 @@ engine = create_engine(
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
 Base = declarative_base()
 
-print(SQLALCHEMY_DATABASE_URL)
+# Dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
