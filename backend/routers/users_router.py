@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
-from uuid import uuid4
+from uuid import uuid4, UUID
 from datetime import datetime, UTC
 
 from database.models import User
 from database.dbs import get_db
-from schemas.UserScheme import UserRegister, UserLogin, UserResponse
+from schemas.UserScheme import UserRegister, UserLogin, UserResponse, UserInfoResponse
 
-from methods.functions import hash_password, verify_password, create_access_token
+from methods.functions import hash_password, verify_password, create_access_token, get_current_user
 from methods.password import is_strong_password, password_strength_meter
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
@@ -60,7 +60,28 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
             detail="Invalid email or password"
         )
     
-    # Here you can generate JWT token or session
+    # generate JWT token
     token_data = {"sub": str(db_user.id)} 
     token = create_access_token(token_data)
     return {"access_token": token, "token_type": "bearer"}
+
+
+@router.get("/me", response_model=UserInfoResponse)
+async def get_me(current_user_id: str = Depends(get_current_user), db: Session = Depends(get_db)):
+    """
+    Get current user information from JWT token
+    """
+    try:
+        user_uuid = UUID(current_user_id)
+        user = db.query(User).filter(User.id == user_uuid).first()
+        return {
+            "id": user.id,
+            "username": user.username,
+            "email":user.email,
+            "created_at":user.created_at
+        }
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid user ID format"
+        )    
