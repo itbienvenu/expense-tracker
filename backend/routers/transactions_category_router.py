@@ -20,7 +20,7 @@ def create_category(
     category: CategoryCreate,
     db: Session = Depends(get_db),
     user_id: str = Depends(get_current_user)
-):
+) -> UUID:
     existing = db.query(Category).filter(Category.name == category.name, Category.user_id == UUID(user_id)).first()
     if existing:
         raise HTTPException(status_code=400, detail="Category already exists")
@@ -31,8 +31,42 @@ def create_category(
     db.refresh(new_category)
     return new_category
 
+# Endpoint to update category
 
-# List Categories
+@router.put("/categories/{category_id}", response_model=CategoryResponse)
+def update_category(
+    category_id, 
+    category: CategoryCreate, 
+    db: Session = Depends(get_db), 
+    current_user = Depends(get_current_user)
+):
+    db_category = db.query(Category).filter(
+        Category.id == UUID(category_id), 
+        Category.user_id == UUID(current_user)
+    ).first()
+    
+    if not db_category:
+        raise HTTPException(status_code=404, detail="Category not found")
+
+    db_category.name = category.name
+    db.commit()
+    db.refresh(db_category)
+    return db_category
+
+
+# Endpoint to delete category
+
+@router.delete("/categories/{category_id}")
+def delete_category(category_id, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
+    db_category = db.query(Category).filter(Category.id == UUID(category_id), Category.user_id == UUID(current_user)).first()
+    if not db_category:
+        raise HTTPException(status_code=404, detail="Category not found")
+
+    db.delete(db_category)
+    db.commit()
+    return {"detail":"Category deleted"}
+
+# lIST CATEGORIES
 
 @router.get("/categories", response_model=List[CategoryResponse])
 def list_categories(
