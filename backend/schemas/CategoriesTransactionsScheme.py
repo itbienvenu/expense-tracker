@@ -1,7 +1,7 @@
 from pydantic import BaseModel, constr
 from uuid import UUID
 from typing import List, Optional
-from datetime import date
+from datetime import date, datetime
 
 
 # Category
@@ -22,7 +22,7 @@ class CategoryResponse(BaseModel):
 class TransactionCreate(BaseModel):
     title: constr(min_length=1, max_length=100)
     amount: float
-    date: Optional[date] = None
+    date: Optional[datetime] = None
     category_ids: List[UUID]
 
 class TransactionResponse(BaseModel):
@@ -34,3 +34,9 @@ class TransactionResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+class TransactionUpdate(BaseModel):
+    title: Optional[str] = None
+    amount: Optional[float] = None
+    date: Optional[datetime] = None
+    category_ids: Optional[List[UUID]] = None

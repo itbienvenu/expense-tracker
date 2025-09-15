@@ -4,7 +4,7 @@ from typing import List
 from datetime import date
 
 from database.models import Category, Transaction, User
-from schemas.CategoriesTransactionsScheme import CategoryCreate, CategoryResponse, TransactionCreate, TransactionResponse
+from schemas.CategoriesTransactionsScheme import CategoryCreate, CategoryResponse, TransactionCreate, TransactionResponse, TransactionUpdate
 from database.dbs import get_db
 from methods.functions import get_current_user
 
@@ -111,3 +111,51 @@ def list_transactions(
     user_id: str = Depends(get_current_user)
 ):
     return db.query(Transaction).filter(Transaction.user_id == UUID(user_id)).all()
+
+
+# Transaction update endpoint
+@router.patch("/transactions/{transaction_id}", response_model=TransactionResponse)
+def patch_transaction(
+    transaction_id,
+    transaction: TransactionUpdate,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    db_transaction = db.query(Transaction).filter(
+        Transaction.id == UUID(transaction_id),
+        Transaction.user_id == UUID(current_user)
+    ).first()
+    if not db_transaction:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+
+    # update provided fields only
+    if transaction.title is not None:
+        db_transaction.title = transaction.title
+    if transaction.amount is not None:
+        db_transaction.amount = transaction.amount
+    if transaction.date is not None:
+        db_transaction.date = transaction.date
+    if transaction.category_ids is not None:
+        categories = db.query(Category).filter(
+            Category.id.in_(transaction.category_ids),
+            Category.user_id == current_user
+        ).all()
+        if not categories or len(categories) != len(transaction.category_ids):
+            raise HTTPException(status_code=400, detail="Invalid categories")
+        db_transaction.categories = categories
+
+    db.commit()
+    db.refresh(db_transaction)
+    return db_transaction
+
+# Endpoint to delete transaction
+
+@router.delete("/transactions/{transaction_id}")
+def delete_transaction(transaction_id, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
+    db_transaction = db.query(Transaction).filter(Transaction.id == UUID(transaction_id), Transaction.user_id == UUID(current_user)).first()
+    if not db_transaction:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+
+    db.delete(db_transaction)
+    db.commit()
+    return {"detail":"Transaction deleted"}
