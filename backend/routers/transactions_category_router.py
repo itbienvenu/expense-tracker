@@ -138,7 +138,7 @@ def patch_transaction(
     if transaction.category_ids is not None:
         categories = db.query(Category).filter(
             Category.id.in_(transaction.category_ids),
-            Category.user_id == current_user
+            Category.user_id == UUID(current_user)
         ).all()
         if not categories or len(categories) != len(transaction.category_ids):
             raise HTTPException(status_code=400, detail="Invalid categories")
