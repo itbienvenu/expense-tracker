@@ -57,14 +57,39 @@ def update_category(
 # Endpoint to delete category
 
 @router.delete("/categories/{category_id}")
-def delete_category(category_id, db: Session = Depends(get_db), current_user = Depends(get_current_user)):
-    db_category = db.query(Category).filter(Category.id == UUID(category_id), Category.user_id == UUID(current_user)).first()
+def delete_category(category_id: str, db: Session = Depends(get_db), current_user=Depends(get_current_user)):
+    try:
+        category_uuid = UUID(category_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid category ID")
+
+    # Fetch category owned by current_user
+    db_category = (
+        db.query(Category)
+        .filter(Category.id == category_uuid, Category.user_id == UUID(current_user))
+        .first()
+    )
+
     if not db_category:
         raise HTTPException(status_code=404, detail="Category not found")
 
+    # Find all related transactions for this user
+    transactions_to_delete = (
+        db.query(Transaction)
+        .join(Transaction.categories)
+        .filter(Category.id == category_uuid, Transaction.user_id == UUID(current_user))
+        .all()
+    )
+
+    # Delete transactions
+    for tx in transactions_to_delete:
+        db.delete(tx)
+
+    # Finally delete category
     db.delete(db_category)
     db.commit()
-    return {"detail":"Category deleted"}
+
+    return {"detail": f"Category and {len(transactions_to_delete)} related transactions deleted"}
 
 # lIST CATEGORIES
 
