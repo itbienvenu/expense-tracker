@@ -61,6 +61,8 @@
 import { ref } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
+// environment api url variable
+const BASE_API_URL = import.meta.env.VITE_APP_API_URL;
 
 const isLogin = ref(true); // Toggle between Login and Register
 const username = ref('');
@@ -72,7 +74,7 @@ const router = useRouter();
 
 const handleLogin = async () => {
   try {
-    const response = await axios.post('http://localhost:8000/auth/login', {
+    const response = await axios.post(`${BASE_API_URL}/auth/login`, {
       email: email.value,
       hashed_password: password.value,
     });
@@ -87,7 +89,7 @@ const handleLogin = async () => {
 
 const handleRegister = async () => {
   try {
-    const response = await axios.post('http://localhost:8000/auth/register', {
+    const response = await axios.post(`${BASE_API_URL}/auth/register`, {
       username: username.value,
       email: email.value,
       password: password.value,

@@ -96,6 +96,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+const BASE_API_URL = import.meta.env.VITE_APP_API_URL;
 
 const transactions = ref([]);
 const categories = ref([]);
@@ -135,7 +136,7 @@ const fetchFilteredTransactions = async () => {
     params.sort_by = 'date';
     params.order = 'desc';
     
-    const response = await axios.get('http://localhost:8000/reports/', { 
+    const response = await axios.get(`${BASE_API_URL}/reports/`, { 
       headers: getHeaders(),
       params: params
     });
@@ -160,7 +161,7 @@ const resetFilters = () => {
 
 const fetchCategories = async () => {
   try {
-    const response = await axios.get('http://localhost:8000/tracker/categories', { headers: getHeaders() });
+    const response = await axios.get(`${BASE_API_URL}/tracker/categories`, { headers: getHeaders() });
     categories.value = response.data;
   } catch (error) {
     console.error('Failed to fetch categories:', error);
@@ -178,10 +179,10 @@ const saveTransaction = async () => {
 
   try {
     if (editingTransaction.value) {
-      await axios.patch(`http://localhost:8000/tracker/transactions/${editingTransaction.value.id}`, payload, { headers: getHeaders() });
+      await axios.patch(`${BASE_API_URL}/tracker/transactions/${editingTransaction.value.id}`, payload, { headers: getHeaders() });
       editingTransaction.value = null;
     } else {
-      await axios.post('http://localhost:8000/tracker/transactions', payload, { headers: getHeaders() });
+      await axios.post(`${BASE_API_URL}/tracker/transactions`, payload, { headers: getHeaders() });
       showAddForm.value = false;
     }
     resetForm();
@@ -218,7 +219,7 @@ const resetForm = () => {
 const deleteTransaction = async (id) => {
   if (confirm('Are you sure you want to delete this transaction?')) {
     try {
-      await axios.delete(`http://localhost:8000/tracker/transactions/${id}`, { headers: getHeaders() });
+      await axios.delete(`${BASE_API_URL}/tracker/transactions/${id}`, { headers: getHeaders() });
       fetchFilteredTransactions();
     } catch (error) {
       console.error('Failed to delete transaction:', error);

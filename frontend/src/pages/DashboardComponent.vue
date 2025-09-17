@@ -59,6 +59,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import Transactions from './TransactionsView.vue';
 import Categories from './CategoriesView.vue';
+const BASE_API_URL = import.meta.env.VITE_APP_API_URL;
 
 const router = useRouter();
 const activeComponent = ref('Transactions');

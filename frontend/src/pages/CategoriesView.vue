@@ -39,6 +39,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
+const BASE_API_URL = import.meta.env.VITE_APP_API_URL;
 
 const categories = ref([]);
 const showAddForm = ref(false);
@@ -52,7 +53,7 @@ const getHeaders = () => {
 
 const fetchCategories = async () => {
   try {
-    const response = await axios.get('http://localhost:8000/tracker/categories', { headers: getHeaders() });
+    const response = await axios.get(`${BASE_API_URL}/tracker/categories`, { headers: getHeaders() });
     categories.value = response.data;
   } catch (error) {
     console.error('Failed to fetch categories:', error);
@@ -67,11 +68,11 @@ const saveCategory = async () => {
   try {
     if (editingCategory.value) {
       // PATCH request to update
-      await axios.put(`http://localhost:8000/tracker/categories/${editingCategory.value.id}`, payload, { headers: getHeaders() });
+      await axios.put(`${BASE_API_URL}/tracker/categories/${editingCategory.value.id}`, payload, { headers: getHeaders() });
       editingCategory.value = null;
     } else {
       // POST request to create
-      await axios.post('http://localhost:8000/tracker/categories', payload, { headers: getHeaders() });
+      await axios.post(`${BASE_API_URL}/tracker/categories`, payload, { headers: getHeaders() });
       showAddForm.value = false;
     }
     resetForm();
@@ -100,8 +101,8 @@ const resetForm = () => {
 const deleteCategory = async (id) => {
   if (confirm('Are you sure you want to delete this category?')) {
     try {
-      await axios.delete(`http://localhost:8000/tracker/categories/${id}`, { headers: getHeaders() });
-      fetchCategories(); // Refresh the list
+      await axios.delete(`${BASE_API_URL}/tracker/categories/${id}`, { headers: getHeaders() });
+      fetchCategories(); // Refresh  list
     } catch (error) {
       console.error('Failed to delete category:', error);
     }
