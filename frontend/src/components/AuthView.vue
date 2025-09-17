@@ -1,0 +1,372 @@
+<template>
+  <div class="split-screen-container">
+    <div class="marketing-panel">
+      <div class="overlay-content">
+        <h1 class="sinc-logo">Sinc</h1>
+        <p class="tagline">The easiest way to manage your events.</p>
+        </div>
+    </div>
+
+    <div class="auth-panel">
+      <div class="auth-card">
+        <div class="logo-placeholder">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 22H22L12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z" fill="#E7A428"/>
+          </svg>
+        </div>
+
+        <h2 class="form-title">{{ isLogin ? 'Login' : 'Register' }}</h2>
+        <p class="form-subtitle">Enter your credentials below!</p>
+
+        <form v-if="isLogin" @submit.prevent="handleLogin" class="auth-form">
+          <div class="input-group">
+            <i class="icon-email"></i> <input v-model="email" placeholder="Email or username" type="text" required />
+          </div>
+          <div class="input-group">
+            <i class="icon-password"></i> <input v-model="password" placeholder="Password" type="password" required />
+            <i class="icon-eye-toggle"></i> </div>
+          <a href="#" class="forgot-password">Forgot password?</a>
+
+          <button type="submit" class="primary-button">Login</button>
+
+          <div class="separator">OR</div>
+
+          <button class="google-button">
+            <img src="" alt="Google Icon" class="google-icon" />
+            Continue with google
+          </button>
+          
+          <p class="toggle-auth">
+            Don't have an account yet?
+            <a href="#" @click.prevent="isLogin = false" class="signup-link">Signup</a>
+          </p>
+        </form>
+
+        <form v-else @submit.prevent="handleRegister" class="auth-form">
+          <div class="input-group">
+            <i class="icon-user"></i> <input v-model="username" placeholder="Username" type="text" required />
+          </div>
+          <div class="input-group">
+            <i class="icon-email"></i> <input v-model="email" placeholder="Email" type="email" required />
+          </div>
+          <div class="input-group">
+            <i class="icon-password"></i> <input v-model="password" placeholder="Password" type="password" required />
+            <i class="icon-eye-toggle"></i> </div>
+          
+          <button type="submit" class="primary-button">Register</button>
+
+          <p class="toggle-auth">
+            Already have an account?
+            <a href="#" @click.prevent="isLogin = true" class="signup-link">Login</a>
+          </p>
+        </form>
+
+        <div class="footer-links">
+          <a href="#">About Us</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Privacy Policy</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+import axios from 'axios';
+import { useRouter } from 'vue-router';
+
+const isLogin = ref(true); // Toggle between Login and Register
+const username = ref('');
+const email = ref('');
+const password = ref('');
+// Using a simple alert for notifications as per the design's lack of a dedicated notification UI.
+// You could re-integrate the previous notification system if preferred.
+const router = useRouter();
+
+const handleLogin = async () => {
+  try {
+    const response = await axios.post('http://localhost:8000/auth/login', {
+      email: email.value,
+      hashed_password: password.value,
+    });
+    const { access_token } = response.data;
+    localStorage.setItem('accessToken', access_token);
+    alert('Login successful!'); // Simple alert
+    router.push('/dashboard');
+  } catch (error) {
+    alert(error.response?.data?.detail || 'Login failed.'); // Simple alert
+  }
+};
+
+const handleRegister = async () => {
+  try {
+    const response = await axios.post('http://localhost:8000/auth/register', {
+      username: username.value,
+      email: email.value,
+      password: password.value,
+    });
+    alert(response.data.detail || 'Registration successful! You can now log in.'); // Simple alert
+    isLogin.value = true; // Switch to login form after registration
+  } catch (error) {
+    alert(error.response?.data?.detail || 'Registration failed.'); // Simple alert
+  }
+};
+</script>
+
+<style scoped>
+.split-screen-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #000000;
+  color: #FFFFFF;
+  font-family: 'Inter', sans-serif; 
+  overflow: hidden;
+}
+
+
+.marketing-panel {
+  flex: 1; 
+  background: 
+    linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url('/path/to/your/background-image.jpg') no-repeat center center;
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  min-height: 100vh;
+}
+
+.overlay-content {
+  text-align: center;
+  color: #FFFFFF;
+  padding: 2rem;
+}
+
+.sinc-logo {
+  font-size: 4rem;
+  font-weight: bold;
+  color: #E7A428;
+  margin-bottom: 0.5rem;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5); 
+}
+
+.tagline {
+  font-size: 1.8rem;
+  max-width: 400px;
+  line-height: 1.4;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+
+.auth-panel {
+  flex: 1; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #000000; 
+  padding: 2rem;
+  position: relative; 
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 400px; 
+  padding: 2rem;
+  border-radius: 8px; /* Slightly rounded corners */
+  text-align: center; /* Center content within the card */
+}
+
+.logo-placeholder {
+  margin-bottom: 2rem;
+  display: inline-flex; /* To center it */
+}
+
+.form-title {
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-bottom: 0.5rem;
+}
+
+.form-subtitle {
+  color: #AAAAAA; 
+  margin-bottom: 2rem;
+  font-size: 1rem;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-group i {
+  position: absolute;
+  left: 15px;
+  color: #AAAAAA; /* Icon color */
+  font-size: 1.1rem;
+}
+
+
+input {
+  width: 100%;
+  padding: 1rem 1rem 1rem 3.5rem; /* Left padding for icon */
+  background-color: #1C1C1C; /* Dark grey for input background */
+  border: 1px solid #333333; /* Slightly lighter border */
+  border-radius: 6px;
+  color: #FFFFFF;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+input::placeholder {
+  color: #AAAAAA;
+}
+
+input:focus {
+  border-color: #E7A428; /* Gold/Orange border on focus */
+  outline: none;
+}
+
+.forgot-password {
+  display: block; /* To push it to its own line */
+  text-align: right;
+  color: #E7A428; /* Gold/Orange for links */
+  text-decoration: none;
+  font-size: 0.9rem;
+  margin-top: -0.5rem; /* Adjust spacing */
+  margin-bottom: 0.5rem;
+}
+
+.primary-button {
+  width: 100%;
+  padding: 1rem;
+  background-color: #E7A428; /* Gold/Orange button */
+  border: none;
+  border-radius: 6px;
+  color: #000000; /* Black text on gold button */
+  font-weight: bold;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.primary-button:hover {
+  background-color: #D4901C; /* Slightly darker gold on hover */
+}
+
+.separator {
+  color: #AAAAAA;
+  position: relative;
+  text-align: center;
+  margin: 1.5rem 0;
+}
+
+.separator::before,
+.separator::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 40%; 
+  height: 1px;
+  background-color: #333333;
+}
+
+.separator::before {
+  left: 0;
+}
+
+.separator::after {
+  right: 0;
+}
+
+.google-button {
+  width: 100%;
+  padding: 1rem;
+  background-color: #1C1C1C; /* Dark grey background */
+  border: 1px solid #333333;
+  border-radius: 6px;
+  color: #FFFFFF;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.google-button:hover {
+  background-color: #2a2a2a;
+  border-color: #555555;
+}
+
+.google-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.toggle-auth {
+  color: #AAAAAA;
+  margin-top: 2rem; /* Spacing for this text */
+  font-size: 0.95rem;
+}
+
+.signup-link {
+  color: #E7A428; /* Gold/Orange for the "Signup" or "Login" link */
+  text-decoration: none;
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+.signup-link:hover {
+  text-decoration: underline;
+}
+
+.footer-links {
+  position: absolute;
+  bottom: 2rem; /* Position at the bottom of the auth-panel */
+  width: calc(100% - 4rem); /* Adjust width to match padding */
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.footer-links a {
+  color: #AAAAAA;
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+
+.footer-links a:hover {
+  color: #FFFFFF;
+  text-decoration: underline;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .marketing-panel {
+    display: none; /* Hide marketing panel on smaller screens */
+  }
+  .auth-panel {
+    flex: none; /* Reset flex */
+    width: 100%; /* Take full width */
+  }
+  .split-screen-container {
+    flex-direction: column; /* Stack vertically on small screens */
+  }
+  .auth-panel .footer-links {
+    position: static; /* Remove absolute positioning */
+    margin-top: 2rem; /* Add margin instead */
+  }
+}
+</style>
