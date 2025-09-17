@@ -8,7 +8,14 @@
     <div v-if="showAddForm || editingCategory" class="card-body">
       <form @submit.prevent="saveCategory">
         <div class="mb-3">
-          <input v-model="categoryName" class="form-control bg-dark text-light border-secondary" placeholder="Category Name" required />
+          <label for="categoryName" class="form-label">Category Name</label>
+          <input 
+            id="categoryName"
+            v-model="categoryName" 
+            class="form-control bg-dark text-light border-secondary" 
+            placeholder="e.g., Groceries, Rent, Salary" 
+            required 
+          />
         </div>
         <div class="d-flex gap-2">
           <button type="submit" class="btn btn-warning">{{ editingCategory ? 'Update' : 'Create' }}</button>
@@ -30,8 +37,78 @@
 </template>
 
 <script setup>
-// The script section remains the same as before, no changes needed to the logic
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
-// ... (rest of the script)
+
+const categories = ref([]);
+const showAddForm = ref(false);
+const editingCategory = ref(null);
+const categoryName = ref('');
+
+const getHeaders = () => {
+  const token = localStorage.getItem('accessToken');
+  return { Authorization: `Bearer ${token}` };
+};
+
+const fetchCategories = async () => {
+  try {
+    const response = await axios.get('http://localhost:8000/tracker/categories', { headers: getHeaders() });
+    categories.value = response.data;
+  } catch (error) {
+    console.error('Failed to fetch categories:', error);
+  }
+};
+
+const saveCategory = async () => {
+  const payload = {
+    name: categoryName.value,
+  };
+
+  try {
+    if (editingCategory.value) {
+      // PATCH request to update
+      await axios.put(`http://localhost:8000/tracker/categories/${editingCategory.value.id}`, payload, { headers: getHeaders() });
+      editingCategory.value = null;
+    } else {
+      // POST request to create
+      await axios.post('http://localhost:8000/tracker/categories', payload, { headers: getHeaders() });
+      showAddForm.value = false;
+    }
+    resetForm();
+    fetchCategories(); // Refresh the list
+  } catch (error) {
+    console.error('Failed to save category:', error);
+  }
+};
+
+const editCategory = (category) => {
+  editingCategory.value = category;
+  categoryName.value = category.name;
+  showAddForm.value = true;
+};
+
+const cancelEdit = () => {
+  editingCategory.value = null;
+  showAddForm.value = false;
+  resetForm();
+};
+
+const resetForm = () => {
+  categoryName.value = '';
+};
+
+const deleteCategory = async (id) => {
+  if (confirm('Are you sure you want to delete this category?')) {
+    try {
+      await axios.delete(`http://localhost:8000/tracker/categories/${id}`, { headers: getHeaders() });
+      fetchCategories(); // Refresh the list
+    } catch (error) {
+      console.error('Failed to delete category:', error);
+    }
+  }
+};
+
+onMounted(() => {
+  fetchCategories();
+});
 </script>
