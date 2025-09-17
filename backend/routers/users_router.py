@@ -31,10 +31,7 @@ def register(user: UserRegister, db: Session = Depends(get_db)):
     if not is_strong:
         # Return error as a normal 200 response with error details
         return {
-            "success": False,
-            "detail": "Password is not strong enough",
-            "errors": errors,
-            "suggestions": password_strength_meter(user.password)[1]
+            "detail": password_strength_meter(user.password)[1]
         }
     new_user = User(
         id=uuid4(),
