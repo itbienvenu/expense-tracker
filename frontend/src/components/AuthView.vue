@@ -9,12 +9,6 @@
 
     <div class="auth-panel">
       <div class="auth-card">
-        <div class="logo-placeholder">
-          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2L2 22H22L12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z" fill="#E7A428"/>
-          </svg>
-        </div>
-
         <h2 class="form-title">{{ isLogin ? 'Login' : 'Register' }}</h2>
         <p class="form-subtitle">Enter your credentials below!</p>
 
@@ -27,15 +21,7 @@
             <i class="icon-eye-toggle"></i> </div>
           <a href="#" class="forgot-password">Forgot password?</a>
 
-          <button type="submit" class="primary-button">Login</button>
-
-          <div class="separator">OR</div>
-
-          <button class="google-button">
-            <img src="" alt="Google Icon" class="google-icon" />
-            Continue with google
-          </button>
-          
+          <button type="submit" class="primary-button">Login</button>          
           <p class="toggle-auth">
             Don't have an account yet?
             <a href="#" @click.prevent="isLogin = false" class="signup-link">Signup</a>
@@ -355,18 +341,18 @@ input:focus {
 /* Responsive adjustments */
 @media (max-width: 992px) {
   .marketing-panel {
-    display: none; /* Hide marketing panel on smaller screens */
+    display: none; 
   }
   .auth-panel {
-    flex: none; /* Reset flex */
-    width: 100%; /* Take full width */
+    flex: none; 
+    width: 100%; 
   }
   .split-screen-container {
-    flex-direction: column; /* Stack vertically on small screens */
+    flex-direction: column;
   }
   .auth-panel .footer-links {
-    position: static; /* Remove absolute positioning */
-    margin-top: 2rem; /* Add margin instead */
+    position: static;
+    margin-top: 2rem; 
   }
 }
 </style>
