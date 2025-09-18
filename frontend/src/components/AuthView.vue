@@ -2,8 +2,8 @@
   <div class="split-screen-container">
     <div class="marketing-panel">
       <div class="overlay-content">
-        <h1 class="sinc-logo">Sinc</h1>
-        <p class="tagline">The easiest way to manage your events.</p>
+        <!-- <h1 class="sinc-logo">Sinc</h1>
+        <p class="tagline">The easiest way to manage your events.</p> -->
         </div>
     </div>
 
@@ -48,9 +48,7 @@
         </form>
 
         <div class="footer-links">
-          <a href="#">About Us</a>
-          <a href="#">Terms of Service</a>
-          <a href="#">Privacy Policy</a>
+          <a href="/api-docs">Documentation</a>
         </div>
       </div>
     </div>
@@ -78,10 +76,10 @@ const handleLogin = async () => {
     });
     const { access_token } = response.data;
     localStorage.setItem('accessToken', access_token);
-    alert('Login successful!'); // Simple alert
+    alert('Login successful!'); 
     router.push('/dashboard');
   } catch (error) {
-    alert(error.response?.data?.detail || 'Login failed.'); // Simple alert
+    alert(error.response?.data?.detail || 'Login failed.'); 
   }
 };
 
@@ -160,8 +158,8 @@ const handleRegister = async () => {
   width: 100%;
   max-width: 400px; 
   padding: 2rem;
-  border-radius: 8px; /* Slightly rounded corners */
-  text-align: center; /* Center content within the card */
+  border-radius: 8px; 
+  text-align: center; 
 }
 
 .logo-placeholder {
@@ -197,16 +195,16 @@ const handleRegister = async () => {
 .input-group i {
   position: absolute;
   left: 15px;
-  color: #AAAAAA; /* Icon color */
+  color: #AAAAAA; 
   font-size: 1.1rem;
 }
 
 
 input {
   width: 100%;
-  padding: 1rem 1rem 1rem 3.5rem; /* Left padding for icon */
-  background-color: #1C1C1C; /* Dark grey for input background */
-  border: 1px solid #333333; /* Slightly lighter border */
+  padding: 1rem 1rem 1rem 3.5rem;
+  background-color: #1C1C1C; 
+  border: 1px solid #333333; 
   border-radius: 6px;
   color: #FFFFFF;
   font-size: 1rem;
