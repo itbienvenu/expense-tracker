@@ -12,11 +12,12 @@ const config = {
     v4: true,
   },
 
-  url: 'https://your-docusaurus-site.example.com',
-  baseUrl: '/',
+  url: 'https://itbienvenu.github.io',
+  baseUrl: '/itbienvenu/',
 
   organizationName: 'itbienvenu', 
   projectName: 'Expense Tracker',
+  deploymentBranch: 'gh-pages',
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
