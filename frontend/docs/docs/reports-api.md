@@ -53,6 +53,5 @@ GET /reports/?start_date=2025-09-01&end_date=2025-09-18&min_amount=10&max_amount
 
 ---
 
-## Models
 
-See [Expense Tracker API](/api/tracker#models) for transaction and category model details.
+
