@@ -1,7 +1,7 @@
 # Expense Tracker
 
 A full-stack expense tracking application built with FastAPI (backend), Vue.js (frontend), and Docusaurus (API documentation).
-
+<b>Live Link: https://expense-tracker-rmj6.vercel.app/</b>
 ## Features
 - User authentication (JWT)
 - Manage categories and transactions
