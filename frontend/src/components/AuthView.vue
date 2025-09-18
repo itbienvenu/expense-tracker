@@ -48,7 +48,7 @@
         </form>
 
         <div class="footer-links">
-          <a href="/api-docs">Documentation</a>
+          <a href="https://itbienvenu.github.io/expense-tracker/docs/api/authentication">Documentation</a>
         </div>
       </div>
     </div>
