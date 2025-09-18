@@ -13,7 +13,7 @@ const config = {
   },
 
   url: 'https://itbienvenu.github.io',
-  baseUrl: '/itbienvenu/',
+  baseUrl: '/',
 
   organizationName: 'itbienvenu', 
   projectName: 'Expense Tracker',
