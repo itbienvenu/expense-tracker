@@ -68,8 +68,6 @@ const isLogin = ref(true); // Toggle between Login and Register
 const username = ref('');
 const email = ref('');
 const password = ref('');
-// Using a simple alert for notifications as per the design's lack of a dedicated notification UI.
-// You could re-integrate the previous notification system if preferred.
 const router = useRouter();
 
 const handleLogin = async () => {
@@ -94,10 +92,10 @@ const handleRegister = async () => {
       email: email.value,
       password: password.value,
     });
-    alert(response.data.detail || 'Registration successful! You can now log in.'); // Simple alert
+    alert(response.data.detail || 'Registration successful! You can now log in.'); 
     isLogin.value = true; // Switch to login form after registration
   } catch (error) {
-    alert(error.response?.data?.detail || 'Registration failed.'); // Simple alert
+    alert(error.response?.data?.detail || 'Registration failed.'); 
   }
 };
 </script>
@@ -117,7 +115,7 @@ const handleRegister = async () => {
   flex: 1; 
   background: 
     linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-    url('/path/to/your/background-image.jpg') no-repeat center center;
+    url('../assets/hero.webp') no-repeat center center;
   background-size: cover;
   display: flex;
   justify-content: center;
