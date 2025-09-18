@@ -220,11 +220,14 @@ const saveTransaction = async () => {
   try {
     if (editingTransaction.value) {
       await axios.patch(`${BASE_API_URL}/tracker/transactions/${editingTransaction.value.id}`, payload, { headers: getHeaders() });
+      window.addNotification('Transaction Update Well.', 'success');
     } else {
       await axios.post(`${BASE_API_URL}/tracker/transactions`, payload, { headers: getHeaders() });
+      window.addNotification('Transaction Created Well.', 'success');
+
     }
     
-    transactionModalInstance.hide(); // Hide the modal on success
+    transactionModalInstance.hide(); 
     resetForm(); // Clear form fields
     fetchFilteredTransactions(); // Refresh the list
   } catch (error) {

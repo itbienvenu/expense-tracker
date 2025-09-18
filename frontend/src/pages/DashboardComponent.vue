@@ -58,6 +58,8 @@
       </div>
     </nav>
 
+    <NotificationBar />
+
     <main class="container-fluid mt-4">
       <div v-if="activeComponent === 'Transactions'">
         <Transactions />
@@ -73,15 +75,16 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
-import Transactions from './TransactionsView.vue'; // Corrected filename
-import Categories from './CategoriesView.vue';     // Corrected filename
+import Transactions from './TransactionsView.vue';
+import Categories from './CategoriesView.vue';   
+import NotificationBar from '../components/NotificationBar.vue';
 
 const BASE_API_URL = import.meta.env.VITE_APP_API_URL;
 
 const router = useRouter();
 const activeComponent = ref('Transactions');
 const isLightTheme = ref(false);
-const user = ref(null); // To store user profile data
+const user = ref(null);
 
 const setActiveComponent = (componentName) => {
   activeComponent.value = componentName;
@@ -104,12 +107,18 @@ const fetchUserProfile = async () => {
     user.value = response.data;
   } catch (error) {
     console.error('Failed to fetch user profile:', error);
+    if (error.response && error.response.status === 401) {
+      window.addNotification('Session expired. Please log in again.', 'danger');
+      logout();
+    }
   }
 };
 
 const logout = () => {
   localStorage.removeItem('accessToken');
   router.push('/auth');
+  // logout success notification
+  window.addNotification('You have been logged out.', 'info');
 };
 
 onMounted(() => {
@@ -118,19 +127,18 @@ onMounted(() => {
     isLightTheme.value = true;
     document.body.classList.add('light-theme');
   }
-  fetchUserProfile(); // Fetch user data when component mounts
+  fetchUserProfile(); 
 });
 </script>
 
 <style scoped>
-/*
-global styles for dark and day theme toogle
-*/
+
 .dashboard-container {
   min-height: 100vh;
 }
-.navbar-brand img { /* Changed from svg to img for your logo */
-  fill: #E7A428; /* This fill won't work on img, but keeping it for context if you switch back */
+
+.navbar-brand svg { 
+  fill: #E7A428; 
 }
 .nav-link.active {
   border-bottom: 2px solid #E7A428;
@@ -155,7 +163,7 @@ global styles for dark and day theme toogle
   box-shadow: 0 0 0 3px #E7A428; /* Accent glow on hover */
 }
 
-/* Dropdown Menu styling for dark theme consistency */
+
 .dropdown-menu-dark {
   background-color: #343a40;
   border-color: #454d55;
@@ -171,13 +179,13 @@ global styles for dark and day theme toogle
   color: #ced4da;
 }
 .dropdown-menu-dark .dropdown-item-text {
-  color: #adb5bd !important; /* Ensure muted text is visible */
+  color: #adb5bd !important; 
 }
 .dropdown-menu-dark .dropdown-divider {
   border-top-color: #454d55;
 }
 
-/* Existing styles for banner (if still in use) */
+
 .split-screen-container {
   display: flex;
   min-height: 100vh;
